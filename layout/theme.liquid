@@ -191,6 +191,7 @@
     {% endstyle %}
 
     {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ 'gocart.css' | asset_url | stylesheet_tag }}
 
     {%- unless settings.type_body_font.system? -%}
       <link rel="preload" as="font" href="{{ settings.type_body_font | font_url }}" type="font/woff2" crossorigin>
@@ -258,5 +259,13 @@
     {%- if settings.predictive_search_enabled -%}
       <script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
+
+    {{ 'gocart.js' | asset_url | script_tag }}
+    {%- section 'go-cart' -%}
+
+    <script>
+      var goCart = new GoCart();
+    </script>
+
   </body>
 </html>
