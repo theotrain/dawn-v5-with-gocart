@@ -239,7 +239,8 @@
 
       window.cartStrings = {
         error: `{{ 'sections.cart.cart_error' | t }}`,
-        quantityError: `{{ 'sections.cart.cart_quantity_error_html' | t: quantity: '[quantity]' }}`
+        quantityError: `{{ 'sections.cart.cart_quantity_error_html' | t: quantity: '[quantity]' }}`,
+        cartItemString: `{{ 'sections.header.cart_count' | t }}`
       }
 
       window.variantStrings = {
@@ -253,6 +254,18 @@
         shareSuccess: `{{ 'general.share.success_message' | t }}`,
         pauseSlideshow: `{{ 'sections.slideshow.pause_slideshow' | t }}`,
         playSlideshow: `{{ 'sections.slideshow.play_slideshow' | t }}`,
+      }
+
+      window.gocartIcons = {
+        close: `{% render 'icon-close-small' %}`,
+        arrow: `{% render 'icon-arrow' %}`,
+        plus: `{% render 'icon-plus' %}`,
+        minus: `{% render 'icon-minus' %}`
+      }
+
+      window.currency = {
+        code: '{{ cart.currency.iso_code }}',
+        symbol: '{{ cart.currency.symbol }}'
       }
     </script>
 

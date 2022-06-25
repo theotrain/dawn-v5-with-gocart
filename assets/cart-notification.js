@@ -32,6 +32,7 @@ class CartNotification extends HTMLElement {
   }
 
   renderContents(parsedState) {
+    console.log('we in here render contents')
       this.cartItemKey = parsedState.key;
       this.getSectionsToRender().forEach((section => {
         document.getElementById(section.id).innerHTML =
@@ -39,18 +40,18 @@ class CartNotification extends HTMLElement {
       }));
 
       if (this.header) this.header.reveal();
-      this.open();
+      // this.open();
   }
 
   getSectionsToRender() {
     return [
-      {
-        id: 'cart-notification-product',
-        selector: `[id="cart-notification-product-${this.cartItemKey}"]`,
-      },
-      {
-        id: 'cart-notification-button'
-      },
+      // {
+      //   id: 'cart-notification-product',
+      //   selector: `[id="cart-notification-product-${this.cartItemKey}"]`,
+      // },
+      // {
+      //   id: 'cart-notification-button'
+      // },
       {
         id: 'cart-icon-bubble'
       }

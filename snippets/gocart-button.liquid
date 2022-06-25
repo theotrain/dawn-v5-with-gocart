@@ -1,0 +1,21 @@
+<!--cart button-->
+<a href="{{ routes.cart_url }}" class="go-cart__trigger js-go-cart-trigger header__icon header__icon--cart link focus-inset" id="cart-icon-bubble">
+ 
+  {%- render 'icon-cart' %}
+  <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
+
+
+  {% if cart != empty %}
+    {% assign classString = "cart-count-bubble" %}
+  {% else %}
+    {% assign classString = "cart-count-bubble hidden" %}
+  {% endif %}
+    <div class="{{ classString }}">
+      {%- if cart.item_count < 100 -%}
+        <span aria-hidden="true" class="js-go-cart-counter">{{ cart.item_count }}</span>
+      {%- endif -%}
+      <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
+    </div>
+
+</a>
+<!--end cart button-->

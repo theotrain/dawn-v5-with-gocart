@@ -177,6 +177,23 @@
           return n.replace(o, r)
       }
 
+      function formatOptions(json_item) {
+        let options = json_item.options_with_values
+        let sizeOption = ''
+        let notSizeOptions = []
+        options.forEach(option => {
+            if (option.name.toLowerCase() == 'size') {
+                sizeOption = `${option.name}: ${option.value}`
+            } else {
+                notSizeOptions.push(option.value)
+            }
+        })
+        if (sizeOption != '') {
+            notSizeOptions.unshift(sizeOption)
+        }
+        return notSizeOptions.join(' / ')
+     }
+
       function _typeof(t) {
           return (_typeof = "function" === typeof Symbol && "symbol" === typeof Symbol.iterator ? function(t) {
               return typeof t
@@ -483,6 +500,8 @@
                   if (!(t instanceof e)) throw new TypeError("Cannot call a class as a function")
               }(this, GoCart);
               this.defaults = Object.assign({}, {
+                  bodyElement: "body",
+                  htmlElement: "html",
                   cartModalFail: ".js-go-cart-modal-fail",
                   cartModalFailClose: ".js-go-cart-modal-fail-close",
                   cartModal: ".js-go-cart-modal",
@@ -509,12 +528,12 @@
                   cartMode: "drawer",
                   drawerDirection: "right",
                   displayModal: !1,
-                  moneyFormat: "${{amount}}",
+                  moneyFormat: currency.symbol + "{{amount}}",
                   labelAddedToCart: "was added to your cart.",
                   labelCartIsEmpty: "Your Cart is currently empty!",
                   labelQuantity: "Quantity:",
                   labelRemove: "Remove"
-              }, t), this.cartModalFail = document.querySelector(this.defaults.cartModalFail), this.cartModalFailClose = document.querySelector(this.defaults.cartModalFailClose), this.cartModal = document.querySelector(this.defaults.cartModal), this.cartModalClose = document.querySelectorAll(this.defaults.cartModalClose), this.cartModalContent = document.querySelector(this.defaults.cartModalContent), this.cartDrawer = document.querySelector(this.defaults.cartDrawer), this.cartDrawerContent = document.querySelector(this.defaults.cartDrawerContent), this.cartDrawerSubTotal = document.querySelector(this.defaults.cartDrawerSubTotal), this.cartDrawerFooter = document.querySelector(this.defaults.cartDrawerFooter), this.cartDrawerClose = document.querySelector(this.defaults.cartDrawerClose), this.cartMiniCart = document.querySelector(this.defaults.cartMiniCart), this.cartMiniCartContent = document.querySelector(this.defaults.cartMiniCartContent), this.cartMiniCartSubTotal = document.querySelector(this.defaults.cartMiniCartSubTotal), this.cartMiniCartFooter = document.querySelector(this.defaults.cartMiniCartFooter), this.cartTrigger = document.querySelector(this.defaults.cartTrigger), this.cartOverlay = document.querySelector(this.defaults.cartOverlay), this.cartCount = document.querySelector(this.defaults.cartCount), this.addToCart = document.querySelectorAll(this.defaults.addToCart), this.removeFromCart = this.defaults.removeFromCart, this.removeFromCartNoDot = this.defaults.removeFromCartNoDot, this.itemQuantity = this.defaults.itemQuantity, this.itemQuantityPlus = this.defaults.itemQuantityPlus, this.itemQuantityMinus = this.defaults.itemQuantityMinus, this.cartMode = this.defaults.cartMode, this.drawerDirection = this.defaults.drawerDirection, this.displayModal = this.defaults.displayModal, this.moneyFormat = this.defaults.moneyFormat, this.labelAddedToCart = this.defaults.labelAddedToCart, this.labelCartIsEmpty = this.defaults.labelCartIsEmpty, this.labelQuantity = this.defaults.labelQuantity, this.labelRemove = this.defaults.labelRemove, this.init()
+              }, t), this.cartModalFail = document.querySelector(this.defaults.cartModalFail), this.bodyElement = document.querySelector(this.defaults.bodyElement), this.htmlElement = document.querySelector(this.defaults.htmlElement), this.cartModalFailClose = document.querySelector(this.defaults.cartModalFailClose), this.cartModal = document.querySelector(this.defaults.cartModal), this.cartModalClose = document.querySelectorAll(this.defaults.cartModalClose), this.cartModalContent = document.querySelector(this.defaults.cartModalContent), this.cartDrawer = document.querySelector(this.defaults.cartDrawer), this.cartDrawerContent = document.querySelector(this.defaults.cartDrawerContent), this.cartDrawerSubTotal = document.querySelector(this.defaults.cartDrawerSubTotal), this.cartDrawerFooter = document.querySelector(this.defaults.cartDrawerFooter), this.cartDrawerClose = document.querySelector(this.defaults.cartDrawerClose), this.cartMiniCart = document.querySelector(this.defaults.cartMiniCart), this.cartMiniCartContent = document.querySelector(this.defaults.cartMiniCartContent), this.cartMiniCartSubTotal = document.querySelector(this.defaults.cartMiniCartSubTotal), this.cartMiniCartFooter = document.querySelector(this.defaults.cartMiniCartFooter), this.cartTrigger = document.querySelector(this.defaults.cartTrigger), this.cartOverlay = document.querySelector(this.defaults.cartOverlay), this.cartCount = document.querySelector(this.defaults.cartCount), this.addToCart = document.querySelectorAll(this.defaults.addToCart), this.removeFromCart = this.defaults.removeFromCart, this.removeFromCartNoDot = this.defaults.removeFromCartNoDot, this.itemQuantity = this.defaults.itemQuantity, this.itemQuantityPlus = this.defaults.itemQuantityPlus, this.itemQuantityMinus = this.defaults.itemQuantityMinus, this.cartMode = this.defaults.cartMode, this.drawerDirection = this.defaults.drawerDirection, this.displayModal = this.defaults.displayModal, this.moneyFormat = this.defaults.moneyFormat, this.labelAddedToCart = this.defaults.labelAddedToCart, this.labelCartIsEmpty = this.defaults.labelCartIsEmpty, this.labelQuantity = this.defaults.labelQuantity, this.labelRemove = this.defaults.labelRemove, this.init()
           }
           var t, e, r;
           return t = GoCart, r = [{
@@ -526,7 +545,17 @@
               key: "init",
               value: function() {
                   var t = this;
-                  this.fetchCart(), this.isDrawerMode && this.setDrawerDirection(), document.addEventListener("click", (function(e) {
+                  this.fetchCart(), this.isDrawerMode && this.setDrawerDirection();
+                  // this.isDrawerMode && this.setDrawerDirection();
+                  let installmentForm = document.querySelector('form.installment');
+                  if (installmentForm) {
+                    addEventListener("submit", function(e) {
+                        e.preventDefault();
+                        var a = e.target.getAttribute("id");
+                        t.addItemToCart(a)
+                    }, false)
+                  }
+                  document.addEventListener("click", (function(e) {
                       if (e.target.matches(t.defaults.addToCart)) {
                           e.preventDefault();
                           for (var r = e.target.parentNode;
@@ -534,7 +563,9 @@
                           var a = r.getAttribute("id");
                           t.addItemToCart(a)
                       }
-                  }), !1), this.cartTrigger.addEventListener("click", (function() {
+                  }), !1),
+                  this.cartTrigger.addEventListener("click", (function(e) {
+                    e.preventDefault();
                       t.isDrawerMode ? t.openCartDrawer() : t.openMiniCart(), t.openCartOverlay()
                   })), this.cartOverlay.addEventListener("click", (function() {
                       t.closeFailModal(), t.closeCartModal(), t.isDrawerMode ? t.closeCartDrawer() : t.closeMiniCart(), t.closeCartOverlay()
@@ -566,74 +597,137 @@
           }, {
               key: "addItemToCart",
               value: function(t) {
-                  var e = this,
-                      r = document.querySelector("#".concat(t)),
-                      a = f()(r, {
-                          hash: !0
+                let productForm = document.querySelector('product-form')
+                let cartNotification = document.querySelector('cart-notification');
+                let form = productForm.querySelector('form');
+                const submitButton = productForm.querySelector('[type="submit"]');
+                if (submitButton.classList.contains('loading')) return;
+                this.handleErrorMessage();
+
+                submitButton.setAttribute('aria-disabled', true);
+                submitButton.classList.add('loading');
+                productForm.querySelector('product-form .loading-overlay__spinner').classList.remove('hidden');
+
+                const config = fetchConfig('javascript');
+                config.headers['X-Requested-With'] = 'XMLHttpRequest';
+                delete config.headers['Content-Type'];
+
+                const formData = new FormData(form);
+                
+                formData.append('sections', cartNotification.getSectionsToRender().map((section) => section.id));
+                formData.append('sections_url', window.location.pathname);
+
+
+              //   for(let [name, value] of formData) {
+              //       console.log(`${name} = ${value}`); // key1 = value1, then key2 = value2
+              //     }
+                config.body = formData;
+                let th = this;
+                  window.fetch("/cart/add.js", config)
+                    .then((t) => t.json())
+                    .then((t) => {
+                        if (t.status) {
+                            th.handleErrorMessage(t.description);
+                        } else {
+                            cartNotification.renderContents(t);
+                            let quickAddModals = document.querySelectorAll('quick-add-modal');
+                            if (quickAddModals) {
+                                quickAddModals.forEach((modal) => {
+                                    modal.hide(true);
+                                })
+                            }
+                            return th.addItemToCartHandler(t)
+                        }
+                    })
+                    .catch((t) => {
+                        throw th.ajaxRequestFail(), new Error(t)
+                    })
+                    .finally(() => {
+                        submitButton.classList.remove('loading');
+                        submitButton.removeAttribute('aria-disabled');
+                        productForm.querySelector('.loading-overlay__spinner').classList.add('hidden');
                       });
-                  window.fetch("/cart/add.js", {
-                      method: "POST",
-                      credentials: "include",
-                      headers: {
-                          "Content-Type": "application/json"
-                      },
-                      body: JSON.stringify(a)
-                  }).then((function(t) {
-                      return t.json()
-                  })).then((function(t) {
-                      return e.addItemToCartHandler(t)
-                  })).catch((function(t) {
-                      throw e.ajaxRequestFail(), new Error(t)
-                  }))
+              }
+          }, {
+              key: "handleErrorMessage",
+              value: function(errorMsg = false) {
+                // console.log(errorMsg)
+                let productForm = document.querySelector('product-form')
+                let errorMessageWrapper = productForm.querySelector('.product-form__error-message-wrapper');
+                // console.log('error message wrapper', errorMessageWrapper)
+                let errorMessage = errorMessageWrapper.querySelector('.product-form__error-message');
+                // console.log('error message', errorMessage)
+          
+                errorMessageWrapper.toggleAttribute('hidden', !errorMsg);
+          
+                if (errorMsg) {
+                  errorMessage.textContent = errorMsg;
+                }
               }
           }, {
               key: "removeItem",
               value: function(t) {
+                let cartNotification = document.querySelector('cart-notification');
+                // console.log(formData)
                   var e = this;
                   window.fetch("/cart/change.js", {
                       method: "POST",
                       credentials: "same-origin",
                       body: JSON.stringify({
                           quantity: 0,
-                          line: t
+                          line: t,
+                          sections: cartNotification.getSectionsToRender().map((section) => section.id)
                       }),
                       headers: {
                           "Content-Type": "application/json"
                       }
-                  }).then((function(t) {
-                      return t.json()
-                  })).then((function() {
+                    })
+                    .then((t) => t.json())
+                    .then((response) => {
+                      cartNotification.renderContents(response);
                       return e.fetchCart()
-                  })).catch((function(t) {
-                      throw e.ajaxRequestFail(), new Error(t)
-                  }))
-              }
-          }, {
-              key: "changeItemQuantity",
-              value: function(t, e) {
-                  var r = this;
-                  window.fetch("/cart/change.js", {
-                      method: "POST",
-                      credentials: "same-origin",
-                      body: JSON.stringify({
-                          quantity: e,
-                          line: t
-                      }),
-                      headers: {
-                          "Content-Type": "application/json"
-                      }
-                  }).then((function(t) {
-                      return t.json()
-                  })).then((function() {
-                      return r.fetchCart()
-                  })).catch((function(t) {
-                      throw r.ajaxRequestFail(), new Error(t)
-                  }))
-              }
+                    })
+                    .catch((t) => {
+                        console.log('shitting the bed in 1, 2, 3...')
+                        throw e.ajaxRequestFail(), new Error(t)
+                    })
+                }
+            }, {
+                key: "changeItemQuantity",
+                value: function(t, e) {
+                    let cartNotification = document.querySelector('cart-notification');
+                    var r = this;
+                    window.fetch("/cart/change.js", {
+                        method: "POST",
+                        credentials: "same-origin",
+                        body: JSON.stringify({
+                            quantity: e,
+                            line: t,
+                            sections: cartNotification.getSectionsToRender().map((section) => section.id)
+                        }),
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    })
+                    .then((t) => t.json())
+                    .then((response) => {
+                        cartNotification.renderContents(response);
+                        return r.fetchCart()
+                    })
+                    .catch((t) => {
+                        throw r.ajaxRequestFail(), new Error(t)
+                    })
+                }
           }, {
               key: "cartItemCount",
               value: function(t) {
-                  this.cartCount.innerHTML = t.item_count
+                //   this.cartCount.innerHTML = t.item_count
+                //   let bubbleClasses = document.querySelector('.cart-count-bubble').classList
+                //   if (t.item_count == 0) {
+                //     bubbleClasses.add('hidden');
+                //   } else {
+                //     bubbleClasses.remove('hidden')
+                //   }
               }
           }, {
               key: "fetchAndOpenCart",
@@ -661,7 +755,7 @@
               value: function(t) {
                   return this.displayModal ? this.fetchAndOpenModal(t) : this.fetchAndOpenCart()
               }
-          }, {
+          },{
               key: "ajaxRequestFail",
               value: function() {
                   this.openFailModal(), this.openCartOverlay()
@@ -680,11 +774,13 @@
               value: function(t) {
                   var e = this;
                   this.clearCartDrawer(), t.items.forEach((function(t, r) {
-                      var a = t.variant_title;
+                    //   var a = t.variant_title;
+                      var a = formatOptions(t);
                       null === a && (a = "");
-                      var o = '\n        <div class="go-cart-item__single" data-line="'.concat(Number(r + 1), '">\n            <div class="go-cart-item__info-wrapper">\n                <div class="go-cart-item__image" style="background-image: url(').concat(t.image, ');"></div>\n                <div class="go-cart-item__info">\n                    <a href="').concat(t.url, '" class="go-cart-item__title">').concat(t.product_title, '</a>\n                    <div class="go-cart-item__variant">').concat(a, '</div>\n                    <div class="go-cart-item__quantity">\n                        <span class="go-cart-item__quantity-label">').concat(e.labelQuantity, ' </span>\n                        <span class="go-cart-item__quantity-button js-go-cart-quantity-minus">-</span>\n                        <input class="go-cart-item__quantity-number js-go-cart-quantity" type="number" value="').concat(t.quantity, '" disabled>\n                        <span class="go-cart-item__quantity-button js-go-cart-quantity-plus">+</span>\n                    </div>\n                </div>\n            </div>\n            <div class="go-cart-item__price">').concat(formatMoney(t.line_price, e.moneyFormat), '</div>\n            <a class="go-cart-item__remove ').concat(e.removeFromCartNoDot, '">').concat(e.labelRemove, "</a>\n        </div>\n      ");
+                      var o = '\n        <div class="go-cart-item__single" data-line="'.concat(Number(r + 1), '">\n            <div class="go-cart-item__info-wrapper">\n                <div class="go-cart-item__image" style="background-image: url(').concat(t.image, ');"></div>\n                <div class="go-cart-item__info">\n                    <a href="').concat(t.url, '" class="go-cart-item__link"> <div class="go-cart-item__title">').concat(t.product_title, '</div>\n                    <div class="go-cart-item__variant">').concat(a, `</div></a>\n                    <div class="go-cart-item__quantity"><div class="go-cart-item__quantity-wrapper">\n                        <button class="go-cart-item__quantity-button js-go-cart-quantity-minus" aria-label="decrease quantity">${ gocartIcons.minus }</button>\n                        <input class="go-cart-item__quantity-number js-go-cart-quantity" type="number" value="`).concat(t.quantity, `" disabled>\n                        <button class="go-cart-item__quantity-button js-go-cart-quantity-plus" aria-label="increase quantity">${ gocartIcons.plus }</button>\n                    </div>\n                </div>\n            </div>\n            </div>\n<div class="go-cart-item__price">`).concat(formatMoney(t.line_price, e.moneyFormat), `</div>\n   <button aria-label="Remove Item From Cart" title="Remove item from cart"  class="go-cart-item__remove ${ e.removeFromCartNoDot }">${ gocartIcons.close }</button></a>\n        </div>\n      `);
+
                       e.cartDrawerContent.innerHTML += o
-                  })), this.cartDrawerSubTotal.innerHTML = formatMoney(t.total_price, this.moneyFormat), this.cartDrawerSubTotal.parentNode.classList.remove("is-invisible"), document.querySelectorAll(this.removeFromCart).forEach((function(t) {
+                  })), this.cartDrawerSubTotal.innerHTML = formatMoney(t.total_price, this.moneyFormat) + ' ' + currency.code, this.cartDrawerSubTotal.parentNode.classList.remove("is-invisible"), document.querySelectorAll(this.removeFromCart).forEach((function(t) {
                       t.addEventListener("click", (function() {
                           GoCart.removeItemAnimation(t.parentNode);
                           var r = t.parentNode.getAttribute("data-line");
@@ -692,15 +788,15 @@
                       }))
                   })), document.querySelectorAll(this.itemQuantityPlus).forEach((function(t) {
                       t.addEventListener("click", (function() {
-                          var r = t.parentNode.parentNode.parentNode.parentNode.getAttribute("data-line"),
-                              a = Number(t.parentNode.querySelector(e.itemQuantity).value) + 1;
+                          var r = t.parentNode.parentNode.parentNode.parentNode.parentNode.getAttribute("data-line"),
+                              a = Number(t.parentNode.parentNode.querySelector(e.itemQuantity).value) + 1;
                           e.changeItemQuantity(r, a)
                       }))
                   })), document.querySelectorAll(this.itemQuantityMinus).forEach((function(t) {
                       t.addEventListener("click", (function() {
-                          var r = t.parentNode.parentNode.parentNode.parentNode.getAttribute("data-line"),
-                              a = Number(t.parentNode.querySelector(e.itemQuantity).value) - 1;
-                          e.changeItemQuantity(r, a), 0 === Number(t.parentNode.querySelector(e.itemQuantity).value - 1) && GoCart.removeItemAnimation(t.parentNode.parentNode.parentNode.parentNode)
+                          var r = t.parentNode.parentNode.parentNode.parentNode.parentNode.getAttribute("data-line"),
+                              a = Number(t.parentNode.parentNode.querySelector(e.itemQuantity).value) - 1;
+                          e.changeItemQuantity(r, a), 0 === Number(t.parentNode.parentNode.querySelector(e.itemQuantity).value - 1) && GoCart.removeItemAnimation(t.parentNode.parentNode.parentNode.parentNode.parentNode)
                       }))
                   }))
               }
@@ -761,12 +857,22 @@
           }, {
               key: "openCartDrawer",
               value: function() {
-                  this.cartDrawer.classList.add("is-open")
+                  this.cartDrawer.classList.add("is-open");
+                  this.htmlElement.classList.add("overflowy");
+                  this.bodyElement.classList.add("overflowy");
+                  this.cartDrawer.addEventListener('transitionend', () => {
+                      let cart = document.querySelector('.go-cart__drawer');
+                      cart.focus();
+                      trapFocus(cart);
+                  }, { once: true });
               }
           }, {
               key: "closeCartDrawer",
               value: function() {
                   this.cartDrawer.classList.remove("is-open")
+                  this.htmlElement.classList.remove("overflowy");
+                  this.bodyElement.classList.remove("overflowy");
+                  removeTrapFocus(document.querySelector('body'));
               }
           }, {
               key: "openMiniCart",
@@ -823,4 +929,6 @@
       e.default = h
   }]).default
 }));
-//# sourceMappingURL=index.js.map
+
+
+this.cartNotification = document.querySelector('cart-notification');

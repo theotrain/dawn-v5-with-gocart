@@ -152,7 +152,22 @@ class QuantityInput extends HTMLElement {
     const previousValue = this.input.value;
 
     event.target.name === 'plus' ? this.input.stepUp() : this.input.stepDown();
-    if (previousValue !== this.input.value) this.input.dispatchEvent(this.changeEvent);
+    if (previousValue !== this.input.value) {
+      this.updateQuantity(this.input.value)
+      this.input.dispatchEvent(this.changeEvent);
+    }
+      
+  }
+
+  updateQuantity(quantity) {
+    console.log("update quantity " , this.dataset.section)
+    // const productForms = document.querySelectorAll(`product-form.product-form, #product-form-installment-${this.dataset.section}`);
+    const productForms = document.querySelectorAll(`product-form.product-form, form.installment`);
+    productForms.forEach((productForm) => {
+      const input = productForm.querySelector('input[name="quantity"]');
+      input.value = quantity;
+      // input.dispatchEvent(new Event('change', { bubbles: true }));
+    }); 
   }
 }
 
@@ -805,7 +820,7 @@ class VariantSelects extends HTMLElement {
   }
 
   updateVariantInput() {
-    const productForms = document.querySelectorAll(`#product-form-${this.dataset.section}, #product-form-installment-${this.dataset.section}`);
+    const productForms = document.querySelectorAll(`product-form.product-form, #product-form-installment-${this.dataset.section}`);
     productForms.forEach((productForm) => {
       const input = productForm.querySelector('input[name="id"]');
       input.value = this.currentVariant.id;
@@ -850,7 +865,7 @@ class VariantSelects extends HTMLElement {
   }
 
   toggleAddButton(disable = true, text, modifyClass = true) {
-    const productForm = document.getElementById(`product-form-${this.dataset.section}`);
+    const productForm = document.querySelector('product-form form');
     if (!productForm) return;
     const addButton = productForm.querySelector('[name="add"]');
     const addButtonText = productForm.querySelector('[name="add"] > span');
@@ -868,7 +883,7 @@ class VariantSelects extends HTMLElement {
   }
 
   setUnavailable() {
-    const button = document.getElementById(`product-form-${this.dataset.section}`);
+    const button = document.querySelector('product-form form');
     const addButton = button.querySelector('[name="add"]');
     const addButtonText = button.querySelector('[name="add"] > span');
     const price = document.getElementById(`price-${this.dataset.section}`);
