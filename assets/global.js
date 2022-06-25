@@ -153,22 +153,22 @@ class QuantityInput extends HTMLElement {
 
     event.target.name === 'plus' ? this.input.stepUp() : this.input.stepDown();
     if (previousValue !== this.input.value) {
-      this.updateQuantity(this.input.value)
+      // this.updateQuantity(this.input.value)
       this.input.dispatchEvent(this.changeEvent);
     }
       
   }
 
-  updateQuantity(quantity) {
-    console.log("update quantity " , this.dataset.section)
-    // const productForms = document.querySelectorAll(`product-form.product-form, #product-form-installment-${this.dataset.section}`);
-    const productForms = document.querySelectorAll(`product-form.product-form, form.installment`);
-    productForms.forEach((productForm) => {
-      const input = productForm.querySelector('input[name="quantity"]');
-      input.value = quantity;
-      // input.dispatchEvent(new Event('change', { bubbles: true }));
-    }); 
-  }
+//   updateQuantity(quantity) {
+//     console.log("update quantity " , this.dataset.section)
+//     // const productForms = document.querySelectorAll(`product-form.product-form, #product-form-installment-${this.dataset.section}`);
+//     const productForms = document.querySelectorAll(`product-form.product-form, form.installment`);
+//     productForms.forEach((productForm) => {
+//       const input = productForm.querySelector('input[name="quantity"]');
+//       input.value = quantity;
+//       // input.dispatchEvent(new Event('change', { bubbles: true }));
+//     }); 
+//   }
 }
 
 customElements.define('quantity-input', QuantityInput);

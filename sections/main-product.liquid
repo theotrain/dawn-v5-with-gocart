@@ -233,7 +233,6 @@
               {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
               {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
                 <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                <input type="hidden" name="quantity" value="1">
                 {{ form | payment_terms }}
               {%- endform -%}
             </div>
@@ -421,7 +420,6 @@
 
                 {%- form 'product', product, id: product_form_id, class: 'form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
                   <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" disabled>
-                  <input type="hidden" name="quantity" value="1">
                   <div class="product-form__buttons">
                     <button
                       type="submit"
